@@ -4,18 +4,26 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
 
 const app = express();
 
+
+const imagesDir = path.join(__dirname, 'images');
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir, { recursive: true });
+}
+
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'images');
   },
   filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + '-' + file.originalname);
+    cb(null, uuidv4() + '-' + file.originalname);
   }
 });
 
@@ -59,9 +67,13 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
+
+const MONGODB_URI =
+  'mongodb://udNodeJs:udNodeJs@localhost:27017/udNodeJs?authSource=udNodeJs';
+
 mongoose
   .connect(
-    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
+    MONGODB_URI
   )
   .then(result => {
     app.listen(8080);
