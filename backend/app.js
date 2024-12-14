@@ -78,7 +78,7 @@ app.put('/post-image', (req, res, next) => {
   }
   return res
     .status(201)
-    .json({ message: 'File stored.', filePath: req.file.path });
+    .json({ message: 'File stored.', filePath: req.file.path.split(path.sep).join('/') });
 });
 
 app.use(
