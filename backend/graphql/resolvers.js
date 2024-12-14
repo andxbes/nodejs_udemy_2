@@ -7,7 +7,7 @@ const Post = require('../models/post');
 const { clearImage } = require('../util/file');
 
 module.exports = {
-  createUser: async function({ userInput }, req) {
+  createUser: async function ({ userInput }, req) {
     //   const email = args.userInput.email;
     const errors = [];
     if (!validator.isEmail(userInput.email)) {
@@ -39,7 +39,7 @@ module.exports = {
     const createdUser = await user.save();
     return { ...createdUser._doc, _id: createdUser._id.toString() };
   },
-  login: async function({ email, password }) {
+  login: async function ({ email, password }) {
     const user = await User.findOne({ email: email });
     if (!user) {
       const error = new Error('User not found.');
@@ -62,7 +62,7 @@ module.exports = {
     );
     return { token: token, userId: user._id.toString() };
   },
-  createPost: async function({ postInput }, req) {
+  createPost: async function ({ postInput }, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
@@ -109,7 +109,7 @@ module.exports = {
       updatedAt: createdPost.updatedAt.toISOString()
     };
   },
-  posts: async function({ page }, req) {
+  posts: async function ({ page }, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
@@ -137,7 +137,7 @@ module.exports = {
       totalPosts: totalPosts
     };
   },
-  post: async function({ id }, req) {
+  post: async function ({ id }, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
@@ -156,7 +156,7 @@ module.exports = {
       updatedAt: post.updatedAt.toISOString()
     };
   },
-  updatePost: async function({ id, postInput }, req) {
+  updatePost: async function ({ id, postInput }, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
@@ -205,7 +205,7 @@ module.exports = {
       updatedAt: updatedPost.updatedAt.toISOString()
     };
   },
-  deletePost: async function({ id }, req) {
+  deletePost: async function ({ id }, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
@@ -223,13 +223,13 @@ module.exports = {
       throw error;
     }
     clearImage(post.imageUrl);
-    await Post.findByIdAndRemove(id);
+    await Post.findByIdAndDelete(id);
     const user = await User.findById(req.userId);
     user.posts.pull(id);
     await user.save();
     return true;
   },
-  user: async function(args, req) {
+  user: async function (args, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
@@ -243,7 +243,7 @@ module.exports = {
     }
     return { ...user._doc, _id: user._id.toString() };
   },
-  updateStatus: async function({ status }, req) {
+  updateStatus: async function ({ status }, req) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated!');
       error.code = 401;
